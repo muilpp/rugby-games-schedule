@@ -26,8 +26,6 @@ public class Init {
     public void getSchedules() {
         Map<LocalDate, List<String>> gameMap = gameService.getGames(7);
 
-        gameMap.keySet().forEach(System.out::println);
-
         gameMap.forEach((k, v) -> {
             if (!gameMap.get(k).isEmpty()) {
                 //Add date to the front of the list

@@ -50,10 +50,8 @@ public class GameServiceImpl implements GameService {
 
         Map<LocalDate, List<String>> games = new TreeMap<>();
         for (Map.Entry<LocalDate,List<Game>> entry : gamesMap.entrySet()) {
-            games.put(entry.getKey(), entry.getValue().stream().map(g -> g.toString()).collect(Collectors.toList()));
+            games.put(entry.getKey(), entry.getValue().stream().map(Game::toString).collect(Collectors.toList()));
         }
-
-        gamesMap.forEach((k,v) -> System.out.println(k +", " + gamesMap.get(k)));
 
         return games;
     }
