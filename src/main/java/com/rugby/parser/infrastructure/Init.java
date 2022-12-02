@@ -2,6 +2,7 @@ package com.rugby.parser.infrastructure;
 
 import com.rugby.parser.domain.ports.GameService;
 import com.rugby.parser.domain.ports.MessageProducer;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
@@ -16,8 +17,7 @@ public class Init {
     private final GameService gameService;
     private final MessageProducer messageProducer;
 
-    public Init(GameService gameService, MessageProducer messageProducer) {
-
+    public Init(GameService gameService, @Qualifier("MqttProducer") MessageProducer messageProducer) {
         this.gameService = gameService;
         this.messageProducer = messageProducer;
     }
@@ -33,5 +33,7 @@ public class Init {
                 messageProducer.sendMessage(gameMap.get(k));
             }
         });
+
+        messageProducer.disconnect();
     }
 }

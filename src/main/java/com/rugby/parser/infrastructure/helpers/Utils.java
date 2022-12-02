@@ -38,14 +38,21 @@ public class Utils {
                 .append(DateTimeFormatter.ofPattern("dd MMMM"))
                 .toFormatter(Locale.FRENCH);
 
+        if (date.substring(0, 2).trim().length() == 1)
+            date = "0"+date;
+
         return MonthDay.parse(date, formatter).atYear(LocalDate.now().getYear());
     }
 
     public static LocalDate formatUkDate(String date) {
         DateTimeFormatter formatter = new DateTimeFormatterBuilder()
                 .parseCaseInsensitive()
-                .append(DateTimeFormatter.ofPattern("dd'th' MMMM"))
+                .append(DateTimeFormatter.ofPattern("dd MMMM"))
                 .toFormatter(Locale.UK);
+
+        date = date.replace("st ", " ").replace("rd ", " ").replace("nd ", " ").replace("th ", " ");
+        if (date.substring(0, 2).trim().length() == 1)
+            date = "0"+date;
 
         return MonthDay.parse(date, formatter).atYear(LocalDate.now().getYear());
     }
