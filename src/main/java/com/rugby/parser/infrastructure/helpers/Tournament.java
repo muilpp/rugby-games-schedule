@@ -5,7 +5,11 @@ public enum Tournament {
     ANS("Autumn Nations Series"),
     CHAMPIONS("Coupe d'Europe"),
     CHALLENGE_EUROPEEN("Challenge Europeen"),
-    SIX_NATIONS("Six Nations");
+    SIX_NATIONS("Six Nations"),
+    THE_RUGBY_CHAMPIONSHIP("The Rugby Championship"),
+    AMICAL("Amical"),
+    TEST_MATCH("Test Match")
+    ;
     //URC("United Rugby Championship"),
     //PREMIER("Gallagher Premiership");
 
