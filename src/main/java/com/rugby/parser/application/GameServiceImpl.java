@@ -34,29 +34,28 @@ public class GameServiceImpl implements GameService {
 
     @Override
     public Map<LocalDate, List<String>> getGames(int maxDays) {
-        Map<LocalDate, List<Game>> frenchGamesMap = getFrenchGames(maxDays);
+        Map<LocalDate, Set<Game>> frenchGamesMap = getFrenchGames(maxDays);
 
-        Map<LocalDate, List<Game>> ukGamesMap = getUkGames(maxDays);
-        Map<LocalDate, List<Game>> gamesMap = new TreeMap<>(frenchGamesMap);
-
+        Map<LocalDate, Set<Game>> ukGamesMap = getUkGames(maxDays);
+        Map<LocalDate, Set<Game>> gamesMap = new TreeMap<>(frenchGamesMap);
         ukGamesMap.forEach((key, value) -> gamesMap.merge(key, value, (uk, france) -> {
-            List<Game> gameList = new ArrayList<>();
-            gameList.addAll(france);
-            gameList.addAll(uk);
-            gameList.sort(Comparator.comparing(Game::getTime));
+            Set<Game> gameSet = new TreeSet<>();
+            gameSet.addAll(france);
+            gameSet.addAll(uk);
+            //gameSet.sort(Comparator.comparing(Game::getTime));
 
-            return gameList;
+            return gameSet;
         }));
 
         Map<LocalDate, List<String>> games = new TreeMap<>();
-        for (Map.Entry<LocalDate,List<Game>> entry : gamesMap.entrySet()) {
+        for (Map.Entry<LocalDate,Set<Game>> entry : gamesMap.entrySet()) {
             games.put(entry.getKey(), entry.getValue().stream().map(Game::toString).collect(Collectors.toList()));
         }
 
         return games;
     }
 
-    private Map<LocalDate, List<Game>> getFrenchGames(int maxDays) {
+    private Map<LocalDate, Set<Game>> getFrenchGames(int maxDays) {
         Document doc;
         try {
             doc = Jsoup.connect(FRENCH_GAMES_URL).get();
@@ -71,7 +70,7 @@ public class GameServiceImpl implements GameService {
         htmlText = htmlText.replace("Demain", CaseUtils.toCamelCase(LocalDate.now().plusDays(1).getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.FRENCH), true) + " " + LocalDate.now().plusDays(1).getDayOfMonth() + " " + LocalDate.now().plusDays(1).getMonth().getDisplayName(TextStyle.FULL, Locale.FRENCH));
         String[] htmlTextArray = htmlText.split("(?="+ DaysOfWeek.LUNDI.value + "|" +DaysOfWeek.MARDI.value + "|" +DaysOfWeek.MERCREDI.value + "|" +DaysOfWeek.JEUDI.value + "|" +DaysOfWeek.VENDREDI.value + "|" +DaysOfWeek.SAMEDI.value + "|" +DaysOfWeek.DIMANCHE.value +")");
 
-        Map<LocalDate, List<Game>> gameMap = new TreeMap<>();
+        Map<LocalDate, Set<Game>> gameMap = new TreeMap<>();
 
         for (String element : htmlTextArray) {
             String[] allWords = element.split("\\s");
@@ -84,7 +83,7 @@ public class GameServiceImpl implements GameService {
                     if (gameMap.containsKey(gameDate)) {
                         gameMap.get(gameDate).add(game);
                     } else {
-                        gameMap.put(gameDate, new ArrayList<>(List.of(game)));
+                        gameMap.put(gameDate, new TreeSet<>(Set.of(game)));
                     }
                 }
             }
@@ -118,7 +117,7 @@ public class GameServiceImpl implements GameService {
         return null;
     }
 
-    private Map<LocalDate, List<Game>> getUkGames(int maxDays) {
+    private Map<LocalDate, Set<Game>> getUkGames(int maxDays) {
         Document doc;
         try {
             doc = Jsoup.connect(UK_GAMES_URL).get();
@@ -128,7 +127,7 @@ public class GameServiceImpl implements GameService {
         }
 
         List<String> htmlTextList = doc.select("div[class=wrap]").stream().filter(Element::hasText).map(Element::text).filter(text -> !text.contains("No Rugby Union fixtures")).collect(Collectors.toList());
-        Map<LocalDate, List<Game>> gameMap = new TreeMap<>();
+        Map<LocalDate, Set<Game>> gameMap = new TreeMap<>();
 
         for (String htmlText : htmlTextList) {
             htmlText = htmlText.replace("Today -", "").trim();
@@ -137,7 +136,7 @@ public class GameServiceImpl implements GameService {
             LocalDate gameDate = formatUkDate(htmlTextArray[1] + " " + htmlTextArray[3]);
             if (gameDate.isAfter(LocalDate.now().plusDays(maxDays))) continue;
 
-            List<Game> gameList = new ArrayList<>();
+            Set<Game> gameList = new TreeSet<>();
 
             for (int i = 0; i < htmlTextArray.length; i++) {
                 Game game = createUkGame(htmlTextArray, i);

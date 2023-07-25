@@ -1,10 +1,14 @@
 package com.rugby.parser.infrastructure.helpers;
 
+import com.rugby.parser.domain.Game;
+
 import java.time.LocalDate;
 import java.time.MonthDay;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.Locale;
 
 public class Utils {
@@ -55,5 +59,12 @@ public class Utils {
             date = "0"+date;
 
         return MonthDay.parse(date, formatter).atYear(LocalDate.now().getYear());
+    }
+
+    public static List<Game> removeDuplicateGames(List<Game> gamesList) {
+
+
+
+        return Collections.emptyList();
     }
 }
