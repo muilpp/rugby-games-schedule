@@ -1,6 +1,7 @@
 package com.rugby.parser.infrastructure.mqtt;
 
 import com.rugby.parser.domain.ports.MessageProducer;
+import lombok.RequiredArgsConstructor;
 import org.eclipse.paho.client.mqttv3.IMqttClient;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
@@ -10,15 +11,12 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.logging.Logger;
 
+@RequiredArgsConstructor
 @Service("MqttProducer")
 public class MqttMessageProducerImpl implements MessageProducer {
 
     private static final Logger LOGGER = Logger.getLogger(MqttMessageProducerImpl.class.getName());
     private final IMqttClient mqttClient;
-
-    public MqttMessageProducerImpl(IMqttClient mqttClient) {
-        this.mqttClient = mqttClient;
-    }
 
     @Override
     public void sendMessage(List<String> messageList) {
